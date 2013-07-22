@@ -130,7 +130,7 @@ var Yorick = (function ($) {
             }
         }
 
-        $("button[data-action]").click(function (e) {
+        $("button[data-action], a[data-action]").click(function (e) {
             e.preventDefault();
             var element = $(this);
             callControllerFunction(element, [element]);
