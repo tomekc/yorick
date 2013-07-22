@@ -118,42 +118,32 @@ var Yorick = (function ($) {
             error("No function", functionName+"()", "is defined in controller", controller);
         }
 
-        $("button[data-action]").click(function (e) {
-            e.preventDefault();
-            var element = $(this);
+
+        function callControllerFunction(element, params) {
             var functionName = element.attr("data-action");
             var controller = findController(element);
             if (typeof(window[controller][functionName]) === 'function') {
-                window[controller][functionName](element);
+                window[controller][functionName].apply(window[controller], params); // (element);
                 updateAll(window[controller]);
             } else {
                 complainAboutMissingFunction(functionName, controller);
             }
+        }
+
+        $("button[data-action]").click(function (e) {
+            e.preventDefault();
+            var element = $(this);
+            callControllerFunction(element, [element]);
         });
 
         $("select[data-action]").change(function (e) {
             var element = $(this);
-            var functionName = element.attr("data-action");
-            var controller = findController(element);
-            if (typeof(window[controller][functionName]) === 'function') {
-                window[controller][functionName](element.val(), element);
-                updateAll(window[controller]);
-            } else {
-                complainAboutMissingFunction(functionName, controller);
-            }
+            callControllerFunction(element, [element.val(), element]);
         });
 
         $("input[type=checkbox][data-action]").change(function (e) {
             var element = $(this);
-            var functionName = element.attr("data-action");
-            var controller = findController(element);
-            if (typeof(window[controller][functionName]) === 'function') {
-                window[controller][functionName](element.is(":checked"), element);
-                updateAll(window[controller]);
-            } else {
-                complainAboutMissingFunction(functionName, controller);
-            }
-
+            callControllerFunction(element, [element.is(":checked"), element]);
         });
 
     });
