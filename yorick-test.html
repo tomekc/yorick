@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--<script src="jquery-1.9.1.js"></script>-->
+    <script src="zepto.min.js"></script>
+    <script type="text/javascript">
+        var YORICK_DEBUG = 1;
+    </script>
+    <script src="yorick.js"></script>
+
+</head>
+<body data-controller="MyController">
+<script>
+    var MyController = {
+        page: 0,
+        status: '',
+        isVisible: false
+    };
+
+
+    MyController.next = function (e) {
+        Yorick.loadFragment('#frag1', 'next.html');
+        this.page = this.page + 1;
+        this.status = "loaded";
+    }
+
+    MyController.tick = function(checked) {
+        console.log("Checkbox checked ", checked);
+        this.isVisible = checked;
+        if (checked) {
+            $("#znikacz").show();
+        } else {
+            $("#znikacz").hide();
+        }
+
+    }
+
+
+</script>
+
+
+<p>To jest strona</p>
+
+
+<button data-action="next">Next</button>
+<button data-action="prev">Prev</button>
+<div>
+    <a href="#next" data-action="next">Next</a>
+</div>
+<div>
+    Status: <span data-value="status">idle...</span> Page <span data-value="page">...</span>
+</div>
+<div id="frag1">
+    <ul>
+        <li>lorem</li>
+        <li>ipsum</li>
+        <li>dolor</li>
+        <li>sit</li>
+    </ul>
+</div>
+
+<select name="wday" data-action="wday">
+    <option value="1">Monday</option>
+    <option value="2">Tuesday</option>
+    <option value="3">Wednesday</option>
+    <option value="4">Thursday</option>
+    <option value="5">Friday</option>
+    <option value="6">Saturday</option>
+    <option value="7">Sunday</option>
+</select>
+
+Selection is : <span data-value="currentWday">?</span>
+
+<p>
+    <input id="ptaszek" type="checkbox" name="tick" data-action="tick"/> Tu zaptaszkuj
+    <span data-value="ticked">...</span>
+    <span data-visible="isVisible">Checkbox is not selected</span>
+</p>
+
+<div id="znikacz" style="background-color: #f4e; padding: 10px; display: none">Cosik co znika</div>
+</body>
+
+
+</html>

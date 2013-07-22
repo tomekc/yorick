@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--<script src="jquery-1.9.1.js"></script>-->
+    <script src="zepto.min.js"></script>
+    <script type="text/javascript">
+        var YORICK_DEBUG = 1;
+    </script>
+    <script src="yorick.js"></script>
+
+</head>
+<body data-x-controller="CTL">
+
+<p>To jest strona</p>
+
+
+<button data-x-action="next">Next</button>
+<button data-x-action="prev">Prev</button>
+
+<div>
+    Status: <span data-x-value="status">idle...</span> Page <span data-x-value="page">...</span>
+</div>
+<div id="frag1" data-x-fragment="frag1">
+    <ul>
+        <li>lorem</li>
+        <li>ipsum</li>
+        <li>dolor</li>
+        <li>sit</li>
+    </ul>
+</div>
+
+<select name="wday" data-x-action="wday">
+    <option value="1">Monday</option>
+    <option value="2">Tuesday</option>
+    <option value="3">Wednesday</option>
+    <option value="4">Thursday</option>
+    <option value="5">Friday</option>
+    <option value="6">Saturday</option>
+    <option value="7">Sunday</option>
+</select>
+
+Selection is : <span data-x-value="currentWday">?</span>
+
+<p>
+    <input id="ptaszek" type="checkbox" name="tick" data-x-action="tick"/> Tu zaptaszkuj
+    <span data-x-value="ticked">...</span>
+</p>
+<div id="znikacz" style="background-color: #f4e; padding: 10px; display: none">Cosik co znika</div>
+</body>
+
+<script type="text/javascript">
+
+    var CTL = CTL || { page : 0 };
+
+    function loadFragment(name, url) {
+        $.ajax({
+            url: url,
+            type: "GET",
+            success: function (data, status, xhr) {
+                $(name).html(data)
+            },
+            error: function (xhr, errorType, error) {
+                $(name).html("Error...")
+            },
+            beforeSend: function (xhr, settings) {
+
+            }
+
+        });
+    }
+
+    // iterate thru values and find matching elements in DOM
+    function update(obj) {
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop)) {
+                var value = obj[prop];
+                if (typeof(value) === "number" || typeof(value) === "string") {
+                    $("[data-x-value="+prop+"]").html(value);
+                }
+            }
+        }
+    }
+
+    // iterate thru found placeholders and apply existing values
+    function updatePlaceholders(elements, data) {
+        var placeholders = $("[data-x-value]");
+
+        placeholders.each(function(i){
+            var name = $(this).attr("data-x-value");
+            if (obj.hasOwnProperty(name)) {
+                var value = obj[prop];
+                if (typeof(value) === "number" || typeof(value) === "string") {
+                    $(this).html(value);
+                }
+            }
+        });
+
+    }
+
+    $(function () {
+
+        function findPlaceholders() {
+            $("[data-x-value]");
+        }
+
+        // TODO nested controllers are not supported
+        function findController(element) {
+            var parents = element.parents("[data-x-controller]");
+            if (parents.length < 1) {
+                console.error("No controller found, add data-x-action attribute to any enclosing element.");
+                return null;
+            }
+            return $(parents[0]).attr("data-x-controller");
+        }
+
+        $("button[data-x-action]").click(function (e) {
+            e.preventDefault();
+           console.log("Klik ",e);
+            var element = $(this);
+            var functionName = element.attr("data-x-action");
+//            console.log("Function: ", functionName);
+
+            var controller = findController(element);
+//            console.log("Controller is "+controller);
+
+            window[controller][functionName](element);
+            update(window[controller]);
+            updatePlaceholders(null, window[controller]);
+
+        });
+        
+        $("select[data-x-action]").change(function (e) {
+            var element = $(this);
+            var functionName = element.attr("data-x-action");
+            var controller = findController(element);
+            window[controller][functionName](element.val(),element);
+            update(window[controller]);
+        });
+
+
+        $("input[type=checkbox][data-x-action]").change(function(e) {
+            var element = $(this);
+            var functionName = element.attr("data-x-action");
+            var controller = findController(element);
+
+            console.log("Checkbox: ",element.is(":checked"), " Controller:", controller);
+            window[controller][functionName](element.is(":checked"), element);
+            update(window[controller]);
+
+        });
+
+        console.log("Dom Ready");
+
+    });
+
+
+    CTL.next = function () {
+        console.log("NEXT clicked");
+        loadFragment("#frag1", "next.html");
+        this.page = this.page + 1;
+        this.status = "loaded";
+    }
+
+    CTL.prev = function () {
+        console.log("PREV");
+        loadFragment("#frag1", "prev2.html");
+        this.page = this.page - 1;
+        this.status = "loaded";
+    }
+
+    CTL.wday = function(value) {
+        this.currentWday = value;
+    }
+
+    CTL.tick = function(checked) {
+        console.log("Checkbox checked ", checked);
+        this.ticked = checked?'yes':'no';
+        if (checked) {
+            $("#znikacz").show();
+        } else {
+            $("#znikacz").hide();
+        }
+
+    }
+    
+    CTL.status = "idle";
+    CTL.ticked = false;
+
+</script>
+
+
+</html>
