@@ -22,6 +22,7 @@
         Yorick.loadFragment('#frag1', 'next.html');
         this.page = this.page + 1;
         this.status = "loaded";
+        Yorick.hash("page",this.page);
     }
 
     MyController.tick = function(checked) {
@@ -32,7 +33,7 @@
         } else {
             $("#znikacz").hide();
         }
-
+        Yorick.hash('vis',checked);
     }
 
     MyController.wday = function(value) {

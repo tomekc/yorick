@@ -14,10 +14,10 @@ function detectJqueryishLibrary() {
 var Yorick = (function ($) {
 
     var
-        // array of all placeholders in DOM
+    // array of all placeholders in DOM
         placeholders,
 
-        // all of visibility
+    // all of visibility
         visibilitySwitches;
 
 
@@ -55,6 +55,30 @@ var Yorick = (function ($) {
         });
     }
 
+    function hash(key, value) {
+        var pairs = window.location.hash.slice(1).split(",");
+        var hashData = {};
+        for (var i = 0; i < pairs.length; i++) {
+            var keyval = pairs[i].split("=");
+            if (keyval.length == 2) {
+                hashData[keyval[0]] = keyval[1];
+            }
+        }
+        if (value === undefined) {  // so it is read
+            return hashData[key];
+        } else {
+            hashData[key] = value;
+            // assemble location hash
+            pairs = [];
+            for (var k in hashData) {
+                if (hashData.hasOwnProperty(k)) {
+                    pairs.push(k + "=" + hashData[k]);
+                }
+            }
+            window.location.hash = pairs.join(",");
+        }
+    }
+
     // === Startup ===
     log("Hello, it's Yorick 1.0");
     if ($ === null) {
@@ -85,7 +109,7 @@ var Yorick = (function ($) {
     }
 
     function updateVisibility(obj) {
-        visibilitySwitches.each(function(i) {
+        visibilitySwitches.each(function (i) {
             var name = $(this).attr("data-visible");
             if (obj.hasOwnProperty(name)) {
                 var value = obj[name];
@@ -109,13 +133,13 @@ var Yorick = (function ($) {
         placeholders = $("[data-value]");
         visibilitySwitches = $('[data-visible]');
 
-        log("Found placeholders ",placeholders);
-        log("Found visibility switches ",visibilitySwitches);
+        log("Found placeholders ", placeholders);
+        log("Found visibility switches ", visibilitySwitches);
 
         // Clicking on any element with 'data-action' attribute will call
         // function whose name is same as value of attribute
         function complainAboutMissingFunction(functionName, controller) {
-            error("No function", functionName+"()", "is defined in controller", controller);
+            error("No function", functionName + "()", "is defined in controller", controller);
         }
 
 
@@ -152,7 +176,8 @@ var Yorick = (function ($) {
     return {
         log: log,
         error: error,
-        loadFragment: loadFragment
+        loadFragment: loadFragment,
+        hash: hash
     };
 
 })(detectJqueryishLibrary());
