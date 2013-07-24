@@ -239,12 +239,12 @@ var Yorick = (function ($) {
             callControllerFunction(element, [element]);
         });
 
-        $("select[data-action]").change(function (e) {
+        $("select[data-action]").change(function () {
             var element = $(this);
             callControllerFunction(element, [element.val(), element]);
         });
 
-        $("input[type=checkbox][data-action]").change(function (e) {
+        $("input[type=checkbox][data-action]").change(function () {
             var element = $(this);
             callControllerFunction(element, [element.is(":checked"), element]);
         });

@@ -14,10 +14,11 @@
     var MyController = function($scope, $y) {
         
         console.log("Hello, this is MyController!");
-        
+
         $scope.page = 0;
         $scope.status = '';
         $scope.isVisible = false;
+        $scope.wday = 0;
 
         $scope.next = function (e) {
             $y.loadFragment('#frag1', 'next.html')
@@ -32,8 +33,7 @@
         }
 
         $scope.tick = function (checked) {
-            console.log("Checkbox checked ", checked);
-            this.isVisible = checked;
+            $scope.isVisible = checked;
             if (checked) {
                 $("#znikacz").show();
             } else {
@@ -43,7 +43,8 @@
         }
 
         $scope.wday = function (value) {
-            this.currentWday = value;
+            $scope.currentWday = value;
+            $y.hash("weekday",value);
         }
 
 
