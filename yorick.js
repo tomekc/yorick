@@ -17,14 +17,13 @@ var Yorick = (function ($) {
     // array of all placeholders in DOM
         placeholders,
 
-    // all of visibility
+    // all visibility attributes in DOM
         visibilitySwitches;
 
 
     function log(msg) {
         if (YORICK_DEBUG && console) {
             var logfunc = Function.prototype.bind.call(console.log, console);
-//            console.log(Array.prototype.slice.call(arguments).join(''));
             logfunc.apply(console, arguments);
         }
     }
@@ -36,15 +35,62 @@ var Yorick = (function ($) {
         }
     }
 
+    function AjaxPromise() {
+        var successFunction,
+            errorFunction,
+            successValue = false,
+            errorValue = false;
+
+        function callSuccess() {
+            successFunction();
+        }
+
+        this.success = function(callback) {
+            successFunction = callback;
+            log("Set success callback in Promise: ",successFunction)
+            if (successValue) {
+                callSuccess();
+            }
+            return this;
+        }
+
+        this.resolveSuccess = function() {
+            successValue = true;
+            if (successFunction !== undefined) {
+                callSuccess();
+            }
+        }
+
+        this.error = function(callback) {
+            errorFunction = callback;
+            if (this.sucessValue && errorFuction !== undefined) {
+                errorFunction();
+            }
+            return this;
+        }
+
+        this.resolveError = function() {
+            errorValue = true;
+            if (errorFuction !== undefined) {
+                errorFunction();
+            }
+        }
+        
+        
+    }
+
     function loadFragment(selector, url, errorHandler) {
+        var promise = new AjaxPromise();
         $.ajax({
             url: url,
             type: "GET",
             success: function (data, status, xhr) {
                 $(selector).html(data);
+                promise.resolveSuccess();
             },
             error: function (xhr, errorType, err) {
                 error("Cannot load fragment into element ", selector);
+                promise.resolveError();
                 if (typeof(errorHandler) === 'function') {
                     errorHandler();
                 }
@@ -53,6 +99,7 @@ var Yorick = (function ($) {
                 // TBI
             }
         });
+        return promise;
     }
 
     function hash(key, value) {
@@ -177,7 +224,8 @@ var Yorick = (function ($) {
         log: log,
         error: error,
         loadFragment: loadFragment,
-        hash: hash
+        hash: hash,
+        updateAll: updateAll
     };
 
 })(detectJqueryishLibrary());

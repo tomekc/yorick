@@ -19,13 +19,19 @@
 
 
     MyController.next = function (e) {
-        Yorick.loadFragment('#frag1', 'next.html');
+        Yorick.loadFragment('#frag1', 'next.html')
+                .success(function () {
+                    this.status = "loaded";
+                    console.log("Successfully loaded next fragment");
+                }).error(function () {
+                    $('#frag1').html('.. Error ..');
+                });
         this.page = this.page + 1;
-        this.status = "loaded";
-        Yorick.hash("page",this.page);
+//        this.status = "loaded";
+        Yorick.hash("page", this.page);
     }
 
-    MyController.tick = function(checked) {
+    MyController.tick = function (checked) {
         console.log("Checkbox checked ", checked);
         this.isVisible = checked;
         if (checked) {
@@ -33,10 +39,10 @@
         } else {
             $("#znikacz").hide();
         }
-        Yorick.hash('vis',checked);
+        Yorick.hash('vis', checked);
     }
 
-    MyController.wday = function(value) {
+    MyController.wday = function (value) {
         this.currentWday = value;
     }
 
