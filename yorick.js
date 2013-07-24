@@ -11,19 +11,17 @@ function detectJqueryishLibrary() {
     }
 }
 
-var Yorick = (function ($) {
+var YORICK_VERSION = "1.0";
 
+(function ($) {
     var
-    // array of all placeholders in DOM
-        placeholders,
+        placeholders,           // array of all placeholders in DOM
+        visibilitySwitches,     // all visibility attributes in DOM
+        controllers,            // all controllers
+        scopes = {}             // $scopes of controllers
+        ;
 
-    // all visibility attributes in DOM
-        visibilitySwitches,
-        controllers,
-        scopes = {}
-    ;
-
-
+    // safe wrapper around console.log
     function log(msg) {
         if (window.YORICK_DEBUG && console) {
             var logfunc = Function.prototype.bind.call(console.log, console);
@@ -44,44 +42,41 @@ var Yorick = (function ($) {
             successValue = false,
             errorValue = false;
 
-        function callSuccess() {
-            successFunction();
+        function invokePromisedFunction(what) {
+            if (what === undefined) {
+                return;
+            }
+            what();
             if (after !== undefined && typeof(after) === 'function') {
                 after();
             }
         }
 
-        this.success = function(callback) {
+        this.success = function (callback) {
             successFunction = callback;
             if (successValue) {
-                callSuccess();
+                invokePromisedFunction(successFunction);
             }
             return this;
         };
 
-        this.resolveSuccess = function() {
+        this.resolveSuccess = function () {
             successValue = true;
-            if (successFunction !== undefined) {
-                callSuccess();
-            }
+            invokePromisedFunction(successFunction);
         };
 
-        this.error = function(callback) {
+        this.error = function (callback) {
             errorFunction = callback;
-            if (this.sucessValue && errorFuction !== undefined) {
-                errorFunction();
+            if (errorValue) {
+                invokePromisedFunction(errorFunction);
             }
             return this;
         };
 
-        this.resolveError = function() {
+        this.resolveError = function () {
             errorValue = true;
-            if (errorFuction !== undefined) {
-                errorFunction();
-            }
+            invokePromisedFunction(errorFunction);
         };
-        
-        
     }
 
     function loadFragment(selector, url, apromise) {
@@ -94,11 +89,8 @@ var Yorick = (function ($) {
                 promise.resolveSuccess();
             },
             error: function (xhr, errorType, err) {
-                error("Cannot load fragment into element ", selector);
+                error("Cannot load fragment from url", url, "into element", selector);
                 promise.resolveError();
-            },
-            beforeSend: function (xhr, settings) {
-                // TBI
             }
         });
         return promise;
@@ -127,13 +119,6 @@ var Yorick = (function ($) {
             window.location.hash = pairs.join(",");
             return value;
         }
-    }
-
-    // === Startup ===
-    log("Hello, it's Yorick 1.0");
-    if ($ === null) {
-        error("No jQuery-ish library found. Please add jQuery or Zepto to scripts.");
-        return {};
     }
 
     function findController(element) {
@@ -179,13 +164,12 @@ var Yorick = (function ($) {
         updateVisibility(obj);
     }
 
-    var methods = {
-        log: log,
-        error: error,
-        loadFragment: loadFragment,
-        hash: hash,
-        updateAll: updateAll
-    };
+    // === Startup ===
+    log("Hello, it's Yorick", YORICK_VERSION);
+    if ($ === null) {
+        error("No jQuery-ish library found. Please add jQuery or Zepto to scripts.");
+        return {};
+    }
 
     $(function () {
         placeholders = $("[data-value]");
@@ -201,8 +185,8 @@ var Yorick = (function ($) {
                 var ymethods = {
                     log: log,
                     error: error,
-                    loadFragment: function(selector, url) {
-                        var after = function() {
+                    loadFragment: function (selector, url) {
+                        var after = function () {
                             updateAll(scopes[name]);
                         };
                         return loadFragment(selector, url, new AjaxPromise(after));
@@ -250,9 +234,4 @@ var Yorick = (function ($) {
         });
 
     });
-
-
-
-    return  methods;
-
 })(detectJqueryishLibrary());
