@@ -38,7 +38,7 @@ var Yorick = (function ($) {
         }
     }
 
-    function AjaxPromise() {
+    function AjaxPromise(after) {
         var successFunction,
             errorFunction,
             successValue = false,
@@ -46,6 +46,9 @@ var Yorick = (function ($) {
 
         function callSuccess() {
             successFunction();
+            if (after !== undefined && typeof(after) === 'function') {
+                after();
+            }
         }
 
         this.success = function(callback) {
@@ -81,8 +84,8 @@ var Yorick = (function ($) {
         
     }
 
-    function loadFragment(selector, url, errorHandler) {
-        var promise = new AjaxPromise();
+    function loadFragment(selector, url, apromise) {
+        var promise = apromise || new AjaxPromise();
         $.ajax({
             url: url,
             type: "GET",
@@ -93,9 +96,6 @@ var Yorick = (function ($) {
             error: function (xhr, errorType, err) {
                 error("Cannot load fragment into element ", selector);
                 promise.resolveError();
-                if (typeof(errorHandler) === 'function') {
-                    errorHandler();
-                }
             },
             beforeSend: function (xhr, settings) {
                 // TBI
@@ -196,7 +196,21 @@ var Yorick = (function ($) {
             var name = $(this).attr("data-controller");
             if (typeof(window[name]) === 'function') {
                 scopes[name] = {};
-                window[name](scopes[name], methods);
+
+                var ymethods = {
+                    log: log,
+                    error: error,
+                    loadFragment: function(selector, url) {
+                        var after = function() {
+                            updateAll(scopes[name]);
+                        }
+                        return loadFragment(selector, url, new AjaxPromise(after));
+                    },
+                    hash: hash,
+                    updateAll: updateAll
+                };
+
+                window[name](scopes[name], ymethods);
             }
         });
 

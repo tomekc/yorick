@@ -24,9 +24,6 @@
                     .success(function () {
                         $scope.status = "loaded";
                         $y.hash("page", $scope.page);
-//                        $y.updateAll($scope);
-
-                        console.log("Successfully loaded next fragment");
                     }).error(function () {
                         $('#frag1').html('.. Error ..');
                     });
