@@ -11,40 +11,49 @@
 </head>
 <body data-controller="MyController">
 <script>
-    var MyController = {
-        page: 0,
-        status: '',
-        isVisible: false
+    var MyController = function($scope, $y) {
+        
+        console.log("Hello, this is MyController!");
+        
+        $scope.page = 0;
+        $scope.status = '';
+        $scope.isVisible = false;
+
+        $scope.next = function (e) {
+            $y.loadFragment('#frag1', 'next.html')
+                    .success(function () {
+                        $scope.status = "loaded";
+                        $y.hash("page", $scope.page);
+//                        $y.updateAll($scope);
+
+                        console.log("Successfully loaded next fragment");
+                    }).error(function () {
+                        $('#frag1').html('.. Error ..');
+                    });
+            $scope.page = $scope.page + 1;
+
+        }
+
+        $scope.tick = function (checked) {
+            console.log("Checkbox checked ", checked);
+            this.isVisible = checked;
+            if (checked) {
+                $("#znikacz").show();
+            } else {
+                $("#znikacz").hide();
+            }
+            Yorick.hash('vis', checked);
+        }
+
+        $scope.wday = function (value) {
+            this.currentWday = value;
+        }
+
+
+
     };
 
 
-    MyController.next = function (e) {
-        Yorick.loadFragment('#frag1', 'next.html')
-                .success(function () {
-                    this.status = "loaded";
-                    console.log("Successfully loaded next fragment");
-                }).error(function () {
-                    $('#frag1').html('.. Error ..');
-                });
-        this.page = this.page + 1;
-//        this.status = "loaded";
-        Yorick.hash("page", this.page);
-    }
-
-    MyController.tick = function (checked) {
-        console.log("Checkbox checked ", checked);
-        this.isVisible = checked;
-        if (checked) {
-            $("#znikacz").show();
-        } else {
-            $("#znikacz").hide();
-        }
-        Yorick.hash('vis', checked);
-    }
-
-    MyController.wday = function (value) {
-        this.currentWday = value;
-    }
 
 </script>
 

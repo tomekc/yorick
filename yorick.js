@@ -18,7 +18,10 @@ var Yorick = (function ($) {
         placeholders,
 
     // all visibility attributes in DOM
-        visibilitySwitches;
+        visibilitySwitches,
+        controllers,
+        scopes = {}
+    ;
 
 
     function log(msg) {
@@ -47,7 +50,6 @@ var Yorick = (function ($) {
 
         this.success = function(callback) {
             successFunction = callback;
-            log("Set success callback in Promise: ",successFunction)
             if (successValue) {
                 callSuccess();
             }
@@ -176,12 +178,27 @@ var Yorick = (function ($) {
         updateVisibility(obj);
     }
 
+    var methods = {
+        log: log,
+        error: error,
+        loadFragment: loadFragment,
+        hash: hash,
+        updateAll: updateAll
+    };
+
     $(function () {
         placeholders = $("[data-value]");
         visibilitySwitches = $('[data-visible]');
+        controllers = $('[data-controller]');
 
-        log("Found placeholders ", placeholders);
-        log("Found visibility switches ", visibilitySwitches);
+        // find all controllers
+        controllers.each(function (i) {
+            var name = $(this).attr("data-controller");
+            if (typeof(window[name]) === 'function') {
+                scopes[name] = {};
+                window[name](scopes[name], methods);
+            }
+        });
 
         // Clicking on any element with 'data-action' attribute will call
         // function whose name is same as value of attribute
@@ -193,9 +210,9 @@ var Yorick = (function ($) {
         function callControllerFunction(element, params) {
             var functionName = element.attr("data-action");
             var controller = findController(element);
-            if (typeof(window[controller][functionName]) === 'function') {
-                window[controller][functionName].apply(window[controller], params); // (element);
-                updateAll(window[controller]);
+            if (typeof(scopes[controller][functionName]) === 'function') {
+                scopes[controller][functionName].apply(window[controller], params); // (element);
+                updateAll(scopes[controller]);
             } else {
                 complainAboutMissingFunction(functionName, controller);
             }
@@ -220,12 +237,7 @@ var Yorick = (function ($) {
     });
 
 
-    return {
-        log: log,
-        error: error,
-        loadFragment: loadFragment,
-        hash: hash,
-        updateAll: updateAll
-    };
+
+    return  methods;
 
 })(detectJqueryishLibrary());
