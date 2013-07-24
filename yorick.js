@@ -25,7 +25,7 @@ var Yorick = (function ($) {
 
 
     function log(msg) {
-        if (YORICK_DEBUG && console) {
+        if (window.YORICK_DEBUG && console) {
             var logfunc = Function.prototype.bind.call(console.log, console);
             logfunc.apply(console, arguments);
         }
@@ -57,14 +57,14 @@ var Yorick = (function ($) {
                 callSuccess();
             }
             return this;
-        }
+        };
 
         this.resolveSuccess = function() {
             successValue = true;
             if (successFunction !== undefined) {
                 callSuccess();
             }
-        }
+        };
 
         this.error = function(callback) {
             errorFunction = callback;
@@ -72,14 +72,14 @@ var Yorick = (function ($) {
                 errorFunction();
             }
             return this;
-        }
+        };
 
         this.resolveError = function() {
             errorValue = true;
             if (errorFuction !== undefined) {
                 errorFunction();
             }
-        }
+        };
         
         
     }
@@ -125,6 +125,7 @@ var Yorick = (function ($) {
                 }
             }
             window.location.hash = pairs.join(",");
+            return value;
         }
     }
 
@@ -203,7 +204,7 @@ var Yorick = (function ($) {
                     loadFragment: function(selector, url) {
                         var after = function() {
                             updateAll(scopes[name]);
-                        }
+                        };
                         return loadFragment(selector, url, new AjaxPromise(after));
                     },
                     hash: hash,
