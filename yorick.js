@@ -1,3 +1,13 @@
+/**
+ * Yorick - minimalist JavaScript framework.
+ *
+ * Call it "jQuery Boilerplate" or "Poor Man's Angular.js"
+ *
+ * Copyright (C) 2013 Tomek Cejner tomek@japko.info
+ *
+ * Distributed under Apache License
+ *
+ */
 function detectJqueryishLibrary() {
     if (typeof(jQuery) === "function") {
         return jQuery;
@@ -11,7 +21,7 @@ function detectJqueryishLibrary() {
     }
 }
 
-var YORICK_VERSION = "1.0";
+var YORICK_VERSION = "1.0.RC1";
 
 (function ($) {
     var
@@ -192,10 +202,13 @@ var YORICK_VERSION = "1.0";
                         return loadFragment(selector, url, new AjaxPromise(after));
                     },
                     hash: hash,
-                    updateAll: updateAll
+                    updateAll: function() {
+                        updateAll(scopes[name]);
+                    }
                 };
 
                 window[name](scopes[name], ymethods);
+                updateAll(scopes[name]);
             }
         });
 
