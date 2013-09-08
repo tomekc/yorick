@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
     <script src="zepto.js"></script>
     <script type="text/javascript">
         var YORICK_DEBUG = 1;
@@ -39,7 +40,7 @@
                         $y.hash("page", $scope.page);
                     }).error(function () {
                         $('#frag1').html('.. Error ..');
-                        $scope.page = '?';
+
                     });
         }
 
@@ -64,6 +65,8 @@
 
 
 </script>
+
+<div class="container">
 
 
 <p>To jest strona</p>
@@ -105,6 +108,10 @@ Selection is : <span data-value="currentWday">?</span>
 </p>
 
 <div id="znikacz" style="background-color: #f4e; padding: 10px; display: none">Cosik co znika</div>
+
+</div>
+
+
 </body>
 
 

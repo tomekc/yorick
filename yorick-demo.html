@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <script src="zepto.js"></script>
+    <script type="text/javascript">
+        var YORICK_DEBUG = 1;
+    </script>
+    <script src="yorick.js"></script>
+</head>
+<body>
+    <script>
+        var DemoController = function($scope, $y) {
+            $y.log("DemoController is initializing now.");
+
+
+        };
+    </script>
+
+    <div class="container" data-controller="DemoController">
+        <h1>Yorick demonstration</h1>
+        <section data-pager="myPager">
+            <h2>Pager</h2>
+            <p>ss</p>
+            <ul class="pager">
+                <li><a href="#" data-pager-prev>Previous</a></li>
+                <li><a href="#" data-pager-next>Next</a></li>
+            </ul>
+            <p>Displaying page <span data-value="$page">?</span> of <span data-value="$numPages">?</span></p>
+        </section>
+        <section>
+            <h2>Pppp</h2>
+            bbb
+        </section>
+
+
+    </div>
+
+
+</body>
+</html>

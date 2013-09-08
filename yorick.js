@@ -207,7 +207,9 @@ var YORICK_VERSION = "1.0.RC1";
                     }
                 };
 
+                // call controller function
                 window[name](scopes[name], ymethods);
+                // update all placeholders after
                 updateAll(scopes[name]);
             }
         });
@@ -244,6 +246,10 @@ var YORICK_VERSION = "1.0.RC1";
         $("input[type=checkbox][data-action]").change(function () {
             var element = $(this);
             callControllerFunction(element, [element.is(":checked"), element]);
+        });
+
+        $(window).on('hashchange', function() {
+            log("Hash changed to",window.location.hash);
         });
 
     });
