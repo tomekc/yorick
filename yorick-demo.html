@@ -7,31 +7,88 @@
         var YORICK_DEBUG = 1;
     </script>
     <script src="yorick.js"></script>
+    <style type="text/css">
+        .vspace10 {
+            margin-top: 10px;
+        }
+        #fragment {
+            background-color: #eeeeee;
+        }
+    </style>
 </head>
 <body>
     <script>
         var DemoController = function($scope, $y) {
             $y.log("DemoController is initializing now.");
 
+            $scope.name = "?";
+            $scope.tickState = "(uset state)";
+            $scope.showPanel = false;
+
+            $scope.selectedDay = function(value) {
+                $y.hash("weekday",value);
+                $scope.showPanel = (value == 7);
+                $scope.name = value;
+            };
+
+            $scope.ticked = function(value) {
+                $scope.tickState = value ? 'ticked' : 'unselected';
+            };
+
+            $scope.showCucumber = function() {
+              $y.loadFragment("#fragment", "demo/cucumber.html");
+            };
+
+            $scope.showTomato = function() {
+                $y.loadFragment("#fragment", "demo/tomato.html");
+            };
 
         };
     </script>
 
     <div class="container" data-controller="DemoController">
-        <h1>Yorick demonstration</h1>
-        <section data-pager="myPager">
-            <h2>Pager</h2>
-            <p>ss</p>
-            <ul class="pager">
-                <li><a href="#" data-pager-prev>Previous</a></li>
-                <li><a href="#" data-pager-next>Next</a></li>
-            </ul>
-            <p>Displaying page <span data-value="$page">?</span> of <span data-value="$numPages">?</span></p>
-        </section>
-        <section>
-            <h2>Pppp</h2>
-            bbb
-        </section>
+        <div class="page-header">
+        <h1>Yorick demo page</h1>
+
+        </div>
+
+        <h2>Select</h2>
+        <div>
+            Select day of week:
+            <select name="wday" data-action="selectedDay">
+                <option value="1">Monday</option>
+                <option value="2">Tuesday</option>
+                <option value="3">Wednesday</option>
+                <option value="4">Thursday</option>
+                <option value="5">Friday</option>
+                <option value="6">Saturday</option>
+                <option value="7">Sunday</option>
+            </select>
+
+        </div>
+        <div class="vspace10">
+            Selected: <span data-value="name">...</span>
+        </div>
+        <div data-visible="showPanel" class="alert-danger col-md-2 text-center">
+            IT'S SUNDAY!
+        </div>
+
+        <h2>Checkbox</h2>
+        <div>
+            Tick a checkbox: <input type="checkbox" data-action="ticked">
+        </div>
+        <div class="vspace10">
+            Checkbox is: <span data-value="tickState">state is indeterminate</span>
+        </div>
+
+        <h2>Fragment loading</h2>
+        <div>
+        <button data-action="showCucumber">What is cucumber?</button>
+        <button data-action="showTomato">What is tomato?</button>
+        </div>
+        <div id="fragment" class="col-md-3 vspace10">
+            ... here comes answer ...
+        </div>
 
 
     </div>
